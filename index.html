@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kas Kelompok POKLAHSAR</title>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 <style>
 *{
 margin:0;
@@ -14,12 +12,10 @@ padding:0;
 box-sizing:border-box;
 font-family:'Segoe UI',sans-serif;
 }
-
 body{
 background:#f4f7fc;
 padding:30px;
 }
-
 .header{
 background:#2952cc;
 color:white;
@@ -28,16 +24,14 @@ border-radius:15px;
 margin-bottom:25px;
 text-align:center;
 }
-
 .header h1{
 margin-bottom:10px;
 }
-
 .header p{
 opacity:.9;
 }
-
-.btn-back{
+/* Style Tambahan untuk Tombol Kembali */
+.btn-back {
 background:#6c757d;
 margin-bottom:20px;
 cursor:pointer;
@@ -47,22 +41,16 @@ font-weight:600;
 display:inline-flex;
 align-items:center;
 gap:8px;
-padding:12px 20px;
-color:white;
-border-radius:10px;
 }
-
-.btn-back:hover{
+.btn-back:hover {
 background:#5a6268;
 transform:translateY(-2px);
 }
-
 .cards{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
 gap:20px;
 }
-
 .card{
 background:white;
 padding:25px;
@@ -71,36 +59,24 @@ box-shadow:0 4px 15px rgba(0,0,0,.08);
 transition:0.3s;
 text-align:center;
 }
-
 .card:hover{
 transform:translateY(-5px);
 }
-
 .card i{
 font-size:45px;
 color:#2952cc;
 margin-bottom:15px;
 }
-
 .card h3{
 margin-bottom:10px;
 color:#333;
 }
-
 .card p{
 font-size:14px;
 color:#666;
 margin-bottom:20px;
 line-height:1.6;
 }
-
-.card h2{
-font-size:28px;
-font-weight:bold;
-color:#2952cc;
-margin-top:10px;
-}
-
 .btn{
 display:inline-block;
 padding:12px 20px;
@@ -110,9 +86,29 @@ text-decoration:none;
 border-radius:10px;
 transition:0.3s;
 }
-
 .btn:hover{
 background:#1e3fa3;
+}
+
+/* Style baru untuk total kas */
+.total-kas {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2952cc;
+    margin: 10px 0;
+}
+.kas-masuk { color: #28a745; }
+.kas-keluar { color: #dc3545; }
+.net-kas { 
+    font-size: 22px; 
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+}
+
+.loading {
+    font-style: italic;
+    color: #888;
 }
 
 .footer{
@@ -123,118 +119,131 @@ color:#666;
 </style>
 </head>
 <body>
-
 <div class="header">
 <h1>Kas Kelompok dan Monitoring Evaluasi</h1>
 <p>Sistem Informasi POKLAHSAR</p>
 </div>
 
-<button onclick="kembaliKeAsal()" class="btn-back">
+<button onclick="kembaliKeAsal()" class="btn btn-back">
 <i class="fas fa-arrow-left"></i> Kembali
 </button>
 
-<!-- RINGKASAN KAS -->
-<div class="cards" style="margin-bottom:25px;">
-
-<div class="card">
-<i class="fas fa-arrow-circle-down" style="color:green;"></i>
-<h3>Total Kas Masuk</h3>
-<h2 id="kasMasuk">Rp 0</h2>
-</div>
-
-<div class="card">
-<i class="fas fa-arrow-circle-up" style="color:red;"></i>
-<h3>Total Kas Keluar</h3>
-<h2 id="kasKeluar">Rp 0</h2>
-</div>
-
-<div class="card">
-<i class="fas fa-wallet"></i>
-<h3>Saldo Kas</h3>
-<h2 id="saldoKas">Rp 0</h2>
-</div>
-
-</div>
-
 <div class="cards">
+    <!-- Card Total Kas Masuk -->
+    <div class="card">
+        <i class="fas fa-arrow-circle-down"></i>
+        <h3>Total Kas Masuk</h3>
+        <p>Saldo pemasukan dari iuran, penjualan, dll.</p>
+        <div id="total-masuk" class="total-kas kas-masuk">Rp 0</div>
+        <div id="loading-masuk" class="loading">Memuat data...</div>
+    </div>
 
-<div class="card">
-<i class="fas fa-file-circle-plus"></i>
-<h3>Google Form Formulir Pendaftaran</h3>
-<p>Form pengisian data formulir pendaftaran oleh pengurus dan anggota.</p>
-<a href="https://forms.gle/cwnCwSoeQowd43HB9"
-target="_blank"
-class="btn">
-Buka Form
-</a>
-</div>
+    <!-- Card Total Kas Keluar -->
+    <div class="card">
+        <i class="fas fa-arrow-circle-up"></i>
+        <h3>Total Kas Keluar</h3>
+        <p>Pengeluaran operasional kelompok</p>
+        <div id="total-keluar" class="total-kas kas-keluar">Rp 0</div>
+        <div id="loading-keluar" class="loading">Memuat data...</div>
+    </div>
 
-<div class="card">
-<i class="fas fa-table"></i>
-<h3>Spreadsheet Formulir Pendaftaran</h3>
-<p>Melihat seluruh data kas kelompok yang telah masuk dari Google Form.</p>
-<a href="https://docs.google.com/spreadsheets/d/1IEvU-u6quLwaXasoR1AhHjD3TS9QLk_oWcdE5TeoYq4/edit?usp=sharing"
-target="_blank"
-class="btn">
-Lihat Data
-</a>
-</div>
+    <!-- Card Saldo Bersih -->
+    <div class="card">
+        <i class="fas fa-wallet"></i>
+        <h3>Saldo Kas Bersih</h3>
+        <p>Total Kas Masuk - Total Kas Keluar</p>
+        <div id="saldo-bersih" class="total-kas">Rp 0</div>
+        <div id="loading-saldo" class="loading">Memuat data...</div>
+    </div>
 
-<div class="card">
-<i class="fas fa-face-smile"></i>
-<h3>Google Form Tingkat Kepuasan</h3>
-<p>Kuesioner tingkat kepuasan anggota terhadap layanan administrasi kelompok.</p>
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSelbcKS1tVFKcIImhoJAkZMp_sueU_3xVCQ6wx8DO2T7YmUsA/viewform?usp=header"
-target="_blank"
-class="btn">
-Isi Kuesioner
-</a>
-</div>
+    <!-- Card Original -->
+    <div class="card">
+        <i class="fas fa-file-circle-plus"></i>
+        <h3>Google Form Formulir Pendaftaran</h3>
+        <p>
+        Form pengisian data formulir pendaftaran oleh pengurus dan anggota.
+        </p>
+        <a href="https://forms.gle/cwnCwSoeQowd43HB9"
+        target="_blank"
+        class="btn">
+        Buka Form
+        </a>
+    </div>
 
-<div class="card">
-<i class="fas fa-chart-bar"></i>
-<h3>Spreadsheet Tingkat Kepuasan</h3>
-<p>Hasil rekapitulasi jawaban kuesioner tingkat kepuasan anggota.</p>
-<a href="https://docs.google.com/spreadsheets/d/1yQ1_s0AB8jwvK3aCQqExX15rgqhPrR68hmY-unSdl_o/edit?usp=sharing"
-target="_blank"
-class="btn">
-Lihat Rekap
-</a>
-</div>
+    <div class="card">
+        <i class="fas fa-table"></i>
+        <h3>Spreadsheet Formulir Pendaftaran</h3>
+        <p>
+        Melihat seluruh data kas kelompok yang telah masuk dari Google Form.
+        </p>
+        <a href="https://docs.google.com/spreadsheets/d/1IEvU-u6quLwaXasoR1AhHjD3TS9QLk_oWcdE5TeoYq4/edit?usp=sharing"
+        target="_blank"
+        class="btn">
+        Lihat Data
+        </a>
+    </div>
 
-<div class="card">
-<i class="fas fa-chart-line"></i>
-<h3>Dashboard Looker Studio Formulir Pendaftaran</h3>
-<p>Visualisasi data formulir pendaftaran dalam bentuk dashboard interaktif.</p>
-<a href="https://datastudio.google.com/s/mBYbVRXKaek"
-target="_blank"
-class="btn">
-Buka Dashboard
-</a>
-</div>
-
-<div class="card">
-<i class="fas fa-chart-line"></i>
-<h3>Dashboard Looker Studio Tingkat Kepuasan</h3>
-<p>Visualisasi data kas kelompok dan tingkat kepuasan dalam bentuk dashboard interaktif.</p>
-<a href="https://datastudio.google.com/embed/reporting/3deac225-1899-4f0c-8032-82af684796a6/page/page_12345"
-target="_blank"
-class="btn">
-Buka Dashboard
-</a>
-</div>
-
-<div class="card">
-<i class="fas fa-file-excel"></i>
-<h3>Hasil Analisis Excel</h3>
-<p>File hasil analisis pieces tingkat kepuasan anggota bagian kas kelompok.</p>
-<a href="https://docs.google.com/spreadsheets/d/1fxyvT7EyzGcp0Dwp05lw5zgnqTyqD5lp/edit?usp=sharing&ouid=115592520576030021001&rtpof=true&sd=true"
-target="_blank"
-class="btn">
-Download Excel
-</a>
-</div>
-
+    <!-- Sisanya tetap sama -->
+    <div class="card">
+        <i class="fas fa-face-smile"></i>
+        <h3>Google Form Tingkat Kepuasan</h3>
+        <p>
+        Kuesioner tingkat kepuasan anggota terhadap layanan administrasi kelompok.
+        </p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSelbcKS1tVFKcIImhoJAkZMp_sueU_3xVCQ6wx8DO2T7YmUsA/viewform?usp=header"
+        target="_blank"
+        class="btn">
+        Isi Kuesioner
+        </a>
+    </div>
+    <div class="card">
+        <i class="fas fa-chart-bar"></i>
+        <h3>Spreadsheet Tingkat Kepuasan</h3>
+        <p>
+        Hasil rekapitulasi jawaban kuesioner tingkat kepuasan anggota.
+        </p>
+        <a href="https://docs.google.com/spreadsheets/d/1yQ1_s0AB8jwvK3aCQqExX15rgqhPrR68hmY-unSdl_o/edit?usp=sharing"
+        target="_blank"
+        class="btn">
+        Lihat Rekap
+        </a>
+    </div>
+    <div class="card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Dashboard Looker Studio Formulir Pendaftaran</h3>
+        <p>
+        Visualisasi data formulir pendaftaran dalam bentuk dashboard interaktif.
+        </p>
+        <a href="https://datastudio.google.com/s/mBYbVRXKaek"
+        target="_blank"
+        class="btn">
+        Buka Dashboard
+        </a>
+    </div>
+    <div class="card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Dashboard Looker Studio Tingkat Kepuasan</h3>
+        <p>
+        Visualisasi data kas kelompok dan tingkat kepuasan dalam bentuk dashboard interaktif.
+        </p>
+        <a href="https://datastudio.google.com/embed/reporting/3deac225-1899-4f0c-8032-82af684796a6/page/page_12345"
+        target="_blank"
+        class="btn">
+        Buka Dashboard
+        </a>
+    </div>
+    <div class="card">
+        <i class="fas fa-file-excel"></i>
+        <h3>Hasil Analisis Excel</h3>
+        <p>
+        File hasil analisis pieces tingkat kepuasan anggota bagian kas kelompok.
+        </p>
+        <a href="https://docs.google.com/spreadsheets/d/1fxyvT7EyzGcp0Dwp05lw5zgnqTyqD5lp/edit?usp=sharing&ouid=115592520576030021001&rtpof=true&sd=true"
+        download
+        class="btn">
+        Download Excel
+        </a>
+    </div>
 </div>
 
 <div class="footer">
@@ -242,7 +251,87 @@ Download Excel
 </div>
 
 <script>
+// Fungsi untuk memformat angka ke Rupiah
+function formatRupiah(angka) {
+    return 'Rp ' + angka.toLocaleString('id-ID');
+}
 
+// Fungsi utama untuk mengambil dan menghitung total kas
+async function loadKasData() {
+    const spreadsheetId = '1IEvU-u6quLwaXasoR1AhHjD3TS9QLk_oWcdE5TeoYq4';
+    // Gunakan export CSV (pastikan sheet sudah di-publish atau di-share publicly)
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv`;
+
+    try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) {
+            throw new Error('Gagal mengambil data');
+        }
+        
+        const csvText = await response.text();
+        
+        // Parse CSV sederhana (menggunakan split baris dan koma)
+        const rows = csvText.trim().split('\n').map(row => {
+            // Handle koma di dalam field (basic parsing)
+            return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        });
+
+        // Cari index kolom yang dibutuhkan
+        const header = rows[0].map(h => h.trim().replace(/"/g, ''));
+        const jenisIndex = header.indexOf('Jenis Transaksi');
+        const nominalIndex = header.indexOf('Nominal (Rp)');
+
+        if (jenisIndex === -1 || nominalIndex === -1) {
+            console.error('Kolom tidak ditemukan');
+            document.getElementById('total-masuk').textContent = 'Error kolom';
+            return;
+        }
+
+        let totalMasuk = 0;
+        let totalKeluar = 0;
+
+        // Mulai dari baris ke-2 (skip header)
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (row.length <= Math.max(jenisIndex, nominalIndex)) continue;
+
+            const jenis = row[jenisIndex].trim().replace(/"/g, '');
+            let nominalStr = row[nominalIndex].trim().replace(/"/g, '').replace(/\./g, '').replace(/,/g, '');
+            const nominal = parseInt(nominalStr) || 0;
+
+            if (jenis.toLowerCase().includes('masuk')) {
+                totalMasuk += nominal;
+            } else if (jenis.toLowerCase().includes('keluar')) {
+                totalKeluar += nominal;
+            }
+        }
+
+        const saldoBersih = totalMasuk - totalKeluar;
+
+        // Update DOM
+        document.getElementById('total-masuk').textContent = formatRupiah(totalMasuk);
+        document.getElementById('total-keluar').textContent = formatRupiah(totalKeluar);
+        document.getElementById('saldo-bersih').textContent = formatRupiah(saldoBersih);
+        
+        // Sembunyikan loading
+        document.getElementById('loading-masuk').style.display = 'none';
+        document.getElementById('loading-keluar').style.display = 'none';
+        document.getElementById('loading-saldo').style.display = 'none';
+
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('total-masuk').innerHTML = 'Gagal memuat<span style="font-size:14px;display:block;color:#dc3545;">Cek sharing sheet</span>';
+        document.getElementById('total-keluar').innerHTML = 'Gagal memuat<span style="font-size:14px;display:block;color:#dc3545;">Cek sharing sheet</span>';
+        document.getElementById('saldo-bersih').innerHTML = 'Gagal memuat';
+    }
+}
+
+// Panggil fungsi saat halaman selesai dimuat
+window.onload = function() {
+    loadKasData();
+};
+
+// Fungsi kembali (sudah ada)
 function kembaliKeAsal() {
     if (document.referrer) {
         window.location.href = document.referrer;
@@ -250,35 +339,9 @@ function kembaliKeAsal() {
         history.back();
     } else {
         alert("Tidak ada halaman sebelumnya untuk kembali.");
+        window.close();
     }
 }
-
-/* ===========================
-   API GOOGLE APPS SCRIPT
-   GANTI DENGAN URL WEB APP
-=========================== */
-
-const API_URL = "https://script.google.com/macros/s/AKfycbx8WDRW7KLsbbhA7mkOsFK0_KRJwHmmig6wvZ9Cjx6Fbc4EnE58Ty6xf1PNnpYTn9R5/exec";
-
-fetch(API_URL)
-.then(response => response.json())
-.then(data => {
-
-document.getElementById("kasMasuk").innerHTML =
-"Rp " + Number(data.kasMasuk).toLocaleString("id-ID");
-
-document.getElementById("kasKeluar").innerHTML =
-"Rp " + Number(data.kasKeluar).toLocaleString("id-ID");
-
-document.getElementById("saldoKas").innerHTML =
-"Rp " + Number(data.saldo).toLocaleString("id-ID");
-
-})
-.catch(error => {
-console.log("Gagal mengambil data kas:", error);
-});
-
 </script>
-
 </body>
 </html>
